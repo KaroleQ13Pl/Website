@@ -1,9 +1,11 @@
 import React from "react";
+import { useUser } from "../contexts/UserContext";
 // Możesz tu dodać importy ikon, jeśli będziesz ich używać
 
 // Komponent Sidebar przyjmuje activeView i setActiveView jako propsy
 // aby mógł podświetlać aktywny link i zmieniać widok w App.jsx
 function Sidebar({ activeView, setActiveView }) {
+  const { user } = useUser(); // Pobieramy dane aktualnego użytkownika
   // Możesz dodać tu tablicę z elementami nawigacji, aby łatwiej nimi zarządzać
   const navItems = [
     { id: "home", label: "Home" /* , icon: <HomeIcon /> */ },
@@ -43,23 +45,35 @@ function Sidebar({ activeView, setActiveView }) {
         </ul>
       </nav>
       <div className="mt-auto">
-        {" "}
-        {/* User Info and Settings at the bottom */}
-        <div className="p-2 mb-2 border-t border-gray-300 dark:border-slate-700">
+        <button // Możesz użyć diva ze stylem `cursor-pointer` jeśli wolisz nie-przyciskowy wygląd
+          onClick={() => setActiveView("userProfile")} // Ustawiamy nowy widok 'userProfile'
+          className={`w-full p-2 mb-2 border-t border-gray-300 dark:border-slate-700 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-md transition-colors duration-150 focus:outline-none 
+                      ${
+                        activeView === "userProfile"
+                          ? "bg-gray-200 dark:bg-slate-700"
+                          : ""
+                      }`} // Opcjonalne podświetlenie
+          aria-label="Przejdź do profilu użytkownika"
+        >
           <div className="flex items-center">
             <img
-              src="https://via.placeholder.com/40/CBD5E0/4A5568?Text=U" // Placeholder z inicjałem U
+              src={
+                user.avatar ||
+                "https://via.placeholder.com/40/CBD5E0/4A5568?Text=G"
+              }
               alt="User Avatar"
-              className="w-10 h-10 rounded-full mr-3 border-2 border-custom-vibrant-purple"
+              className="w-10 h-10 rounded-full mr-3 border-2 border-custom-vibrant-purple object-cover"
             />
             <div>
-              <p className="font-semibold text-sm text-custom-dark-text dark:text-custom-light-text">
-                Nazwa Użytkownika
+              <p className="font-semibold text-sm text-custom-dark-text dark:text-custom-light-text truncate max-w-[120px]">
+                {user.nick || "Gość"}
               </p>
-              {/* <p className="text-xs text-gray-500 dark:text-gray-400">Online</p> */}
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                {user.id || "Brak ID"}
+              </p>
             </div>
           </div>
-        </div>
+        </button>
         <button
           onClick={() => setActiveView("settings")} // Zmieniamy activeView na 'settings'
           className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors duration-150

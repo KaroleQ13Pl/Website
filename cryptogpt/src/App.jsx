@@ -4,6 +4,7 @@ import ThemeToggler from "./components/ThemeToggler";
 import ChatInterface from "./components/ChatInterface";
 import Sidebar from "./components/SideBar"; // Importujemy Sidebar
 import SettingsPage from "./components/SettingsPage"; // Importujemy SettingsPage
+import UserProfilePage from "./components/UserProfilePage"; // Importujemy UserProfilePage
 
 function App() {
   const [activeView, setActiveView] = useState("chat");
@@ -37,6 +38,7 @@ function App() {
             <ChatInterface />
           )}
           {activeView === "settings" && <SettingsPage />}
+          {activeView === "userProfile" && <UserProfilePage />}
         </main>
       </div>
 
