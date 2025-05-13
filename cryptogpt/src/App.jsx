@@ -22,6 +22,13 @@ function App() {
     return "light";
   });
 
+  const [messages, setMessages] = useState([
+    // Przykładowe wiadomości początkowe (możesz je usunąć lub zostawić do testów)
+    { id: 1, text: "Witaj! Jak mogę pomóc?", sender: "ai" },
+    { id: 2, text: "Chciałbym zapytać o pogodę.", sender: "user" },
+  ]);
+  const [currentMessage, setCurrentMessage] = useState("");
+
   // Funkcja do przełączania motywu
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
@@ -39,9 +46,19 @@ function App() {
     localStorage.setItem("theme", theme);
   }, [theme]); // Ten efekt uruchomi się za każdym razem, gdy zmieni się stan 'theme'
 
-  // --- POCZĄTEK NOWEJ ZAWARTOŚCI DLA CZATU ---
-  // Na razie pusto, zaraz tu dodamy elementy czatu
-  // --- KONIEC NOWEJ ZAWARTOŚCI DLA CZATU ---
+  const handleSendMessage = (e) => {
+    e.preventDefault(); // Zapobiegaj domyślnemu przeładowaniu strony przez formularz
+    if (currentMessage.trim() === "") return; // Nie wysyłaj pustych wiadomości
+
+    const newMessage = {
+      id: Date.now(), // Prosty unikalny ID oparty na czasie
+      text: currentMessage.trim(),
+      sender: "user", // Na razie wszystkie wiadomości są od użytkownika
+    };
+
+    setMessages((prevMessages) => [...prevMessages, newMessage]); // Dodaj nową wiadomość do istniejących
+    setCurrentMessage(""); // Wyczyść pole input po wysłaniu
+  };
 
   return (
     <div className="min-h-screen bg-custom-off-white dark:bg-custom-deep-blue flex flex-col items-center justify-center p-4 transition-colors duration-300 ease-in-out">
@@ -84,8 +101,7 @@ function App() {
           )}
         </button>
       </div>
-
-      {/* >>> NOWA STRUKTURA CZATU ZASTĘPUJE POPRZEDNI DIV <<< */}
+      {/* Kontener czatu */}
       <div className="flex flex-col w-full max-w-2xl h-[80vh] bg-white dark:bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300 ease-in-out">
         {/* 1. Nagłówek czatu (opcjonalnie) */}
         <header className="bg-custom-vibrant-purple text-white p-4 text-center">
@@ -93,24 +109,45 @@ function App() {
         </header>
 
         {/* 2. Obszar wyświetlania wiadomości */}
-        <div className="flex-grow p-4 space-y-4 overflow-y-auto bg-gray-50 dark:bg-slate-700">
-          {/* Wiadomości będą tutaj renderowane */}
-          <p className="text-center text-gray-500 dark:text-gray-400">
-            Brak wiadomości...
-          </p>
+        <div className="flex-grow p-4 space-y-2 overflow-y-auto bg-gray-50 dark:bg-slate-700">
+          {messages.length === 0 ? (
+            <p className="text-center text-gray-500 dark:text-gray-400">
+              Rozpocznij rozmowę!
+            </p>
+          ) : (
+            messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`p-3 rounded-lg max-w-[75%] break-words
+                  ${
+                    msg.sender === "user"
+                      ? "bg-custom-vibrant-purple text-white self-end ml-auto" // Wiadomość użytkownika po prawej
+                      : "bg-slate-200 dark:bg-slate-600 text-custom-dark-text dark:text-custom-light-text self-start mr-auto" // Wiadomość AI po lewej
+                  }`}
+              >
+                {msg.text}
+              </div>
+            ))
+          )}
         </div>
 
         {/* 3. Formularz do wpisywania i wysyłania wiadomości */}
-        <form className="p-4 border-t border-gray-200 dark:border-slate-600 bg-gray-100 dark:bg-slate-800">
+        <form
+          onSubmit={handleSendMessage} // Dodaj obsługę onSubmit
+          className="p-4 border-t border-gray-200 dark:border-slate-600 bg-gray-100 dark:bg-slate-800"
+        >
           <div className="flex items-center space-x-2">
             <input
               type="text"
               placeholder="Wpisz wiadomość..."
+              value={currentMessage} // Połącz wartość inputa ze stanem currentMessage
+              onChange={(e) => setCurrentMessage(e.target.value)} // Aktualizuj stan przy każdej zmianie
               className="flex-grow p-2 border border-gray-300 dark:border-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-vibrant-purple dark:bg-slate-700 dark:text-custom-light-text"
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-custom-vibrant-purple text-white rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-custom-vibrant-purple"
+              className="px-4 py-2 bg-custom-vibrant-purple text-white rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-custom-vibrant-purple disabled:opacity-50"
+              disabled={currentMessage.trim() === ""} // Wyłącz przycisk, jeśli input jest pusty
             >
               Wyślij
             </button>
