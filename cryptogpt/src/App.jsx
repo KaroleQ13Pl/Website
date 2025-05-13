@@ -1,5 +1,7 @@
 // src/App.jsx
 import React, { useState, useEffect, useRef } from "react"; // Upewnij się, że useEffect jest zaimportowany
+import MessageInput from "./components/MessageInput"; // Importuj komponent MessageInput
+import MessageList from "./components/MessageList"; // Importujemy MessageList
 
 function App() {
   // Stan do przechowywania aktualnego motywu ('light' lub 'dark')
@@ -180,60 +182,17 @@ function App() {
           <h1 className="text-xl font-semibold">Mój Czat AI</h1>
         </header>
 
-        {/* 2. Obszar wyświetlania wiadomości */}
-        <div
-          ref={messagesContainerRef} // Użyj ref do przewijania
-          className="flex-grow p-4 space-y-2 overflow-y-auto bg-gray-50 dark:bg-slate-700"
-        >
-          {messages.length === 0 ? (
-            <p className="text-center text-gray-500 dark:text-gray-400">
-              Rozpocznij rozmowę!
-            </p>
-          ) : (
-            messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`p-3 rounded-lg max-w-[75%] break-words
-                  ${
-                    msg.sender === "user"
-                      ? "bg-custom-vibrant-purple text-white self-end ml-auto" // Wiadomość użytkownika po prawej
-                      : "bg-slate-200 dark:bg-slate-600 text-custom-dark-text dark:text-custom-light-text self-start mr-auto" // Wiadomość AI po lewej
-                  }`}
-              >
-                {msg.text}
-              </div>
-            ))
-          )}
-          {isAiTyping && (
-            <div className="p-3 rounded-lg max-w-[75%] bg-slate-200 dark:bg-slate-600 text-custom-dark-text dark:text-custom-light-text self-start mr-auto animate-pulse">
-              AI pisze...
-            </div>
-          )}
-        </div>
-
-        {/* 3. Formularz do wpisywania i wysyłania wiadomości */}
-        <form
-          onSubmit={handleSendMessage} // Dodaj obsługę onSubmit
-          className="p-4 border-t border-gray-200 dark:border-slate-600 bg-gray-100 dark:bg-slate-800"
-        >
-          <div className="flex items-center space-x-2">
-            <input
-              type="text"
-              placeholder="Wpisz wiadomość..."
-              value={currentMessage} // Połącz wartość inputa ze stanem currentMessage
-              onChange={(e) => setCurrentMessage(e.target.value)} // Aktualizuj stan przy każdej zmianie
-              disabled={isAiTyping} // Wyłącz input, gdy AI pisze
-              className="flex-grow p-2 border border-gray-300 dark:border-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-vibrant-purple dark:bg-slate-700 dark:text-custom-light-text"
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-custom-vibrant-purple text-white rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-custom-vibrant-purple disabled:opacity-50"
-              disabled={currentMessage.trim() === "" || isAiTyping} // Wyłącz przycisk, jeśli input jest pusty
-            >
-              Wyślij
-            </button>
-          </div>
-        </form>
+        <MessageList
+          messages={messages}
+          messagesContainerRef={messagesContainerRef}
+          isAiTyping={isAiTyping}
+        />
+        <MessageInput
+          currentMessage={currentMessage}
+          setCurrentMessage={setCurrentMessage}
+          handleSendMessage={handleSendMessage}
+          isAiTyping={isAiTyping}
+        />
       </div>
     </div>
   );
