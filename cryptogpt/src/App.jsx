@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState, useEffect } from "react"; // Upewnij się, że useEffect jest zaimportowany
+import React, { useState, useEffect, useRef } from "react"; // Upewnij się, że useEffect jest zaimportowany
 
 function App() {
   // Stan do przechowywania aktualnego motywu ('light' lub 'dark')
@@ -46,19 +46,91 @@ function App() {
     localStorage.setItem("theme", theme);
   }, [theme]); // Ten efekt uruchomi się za każdym razem, gdy zmieni się stan 'theme'
 
-  const handleSendMessage = (e) => {
-    e.preventDefault(); // Zapobiegaj domyślnemu przeładowaniu strony przez formularz
-    if (currentMessage.trim() === "") return; // Nie wysyłaj pustych wiadomości
+  const handleSendMessage = async (e) => {
+    // Dodajemy async
+    e.preventDefault();
+    if (currentMessage.trim() === "") return;
 
-    const newMessage = {
-      id: Date.now(), // Prosty unikalny ID oparty na czasie
+    const userMessage = {
+      id: Date.now(),
       text: currentMessage.trim(),
-      sender: "user", // Na razie wszystkie wiadomości są od użytkownika
+      sender: "user",
     };
 
-    setMessages((prevMessages) => [...prevMessages, newMessage]); // Dodaj nową wiadomość do istniejących
-    setCurrentMessage(""); // Wyczyść pole input po wysłaniu
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+    const messageToSendToN8n = currentMessage.trim(); // Zapisz wiadomość przed wyczyszczeniem inputu
+    setCurrentMessage("");
+    setIsAiTyping(true); // Ustaw wskaźnik, że AI "pisze"
+
+    try {
+      const response = await fetch(N8N_WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Tutaj możesz dodać nagłówki autoryzacyjne, jeśli Twój webhook n8n ich wymaga
+          // 'Authorization': 'Bearer TWOJ_TOKEN_N8N',
+        },
+        body: JSON.stringify({ message: messageToSendToN8n }), // Wysyłamy wiadomość w ciele JSON
+      });
+
+      if (!response.ok) {
+        // Jeśli odpowiedź serwera nie jest OK (np. błąd 4xx, 5xx)
+        throw new Error(`Błąd HTTP: ${response.status}`);
+      }
+
+      const data = await response.json(); // Oczekujemy odpowiedzi JSON z n8n
+
+      // Załóżmy, że n8n zwraca JSON w formacie: { "reply": "Odpowiedź od AI" }
+      if (data.reply) {
+        const aiResponse = {
+          id: Date.now() + 1, // Upewnij się, że ID jest unikalne
+          text: data.reply,
+          sender: "ai",
+        };
+        setMessages((prevMessages) => [...prevMessages, aiResponse]);
+      } else {
+        // Jeśli odpowiedź z n8n nie ma oczekiwanego pola "reply"
+        console.error(
+          "Otrzymano nieoczekiwany format odpowiedzi od n8n:",
+          data
+        );
+        const aiErrorResponse = {
+          id: Date.now() + 1,
+          text: "Przepraszam, wystąpił błąd w komunikacji z serwerem AI (nieprawidłowy format odpowiedzi).",
+          sender: "ai",
+        };
+        setMessages((prevMessages) => [...prevMessages, aiErrorResponse]);
+      }
+    } catch (error) {
+      console.error("Błąd podczas wysyłania wiadomości do n8n:", error);
+      // Wyświetl wiadomość o błędzie użytkownikowi
+      const aiErrorResponse = {
+        id: Date.now() + 1,
+        text: `Przepraszam, wystąpił błąd: ${error.message}. Spróbuj ponownie później.`,
+        sender: "ai",
+      };
+      setMessages((prevMessages) => [...prevMessages, aiErrorResponse]);
+    } finally {
+      setIsAiTyping(false); // Niezależnie od wyniku, AI "kończy pisać"
+    }
   };
+
+  // Ref do scrollowania do ostatniej wiadomości
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null); // Ref dla kontenera wiadomości
+
+  // Funkcja do przewijania do ostatniej wiadomości
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      const { scrollHeight, clientHeight } = messagesContainerRef.current;
+      messagesContainerRef.current.scrollTop = scrollHeight - clientHeight;
+    }
+  }, [messages]); // Uruchom ten efekt za każdym razem, gdy zmieni się tablica 'messages'
+
+  const N8N_WEBHOOK_URL =
+    "https://guided-yearly-swan.ngrok-free.app/webhook-test/0fc0a28a-c3d5-4491-ba8e-a7378172c202";
+
+  const [isAiTyping, setIsAiTyping] = useState(false);
 
   return (
     <div className="min-h-screen bg-custom-off-white dark:bg-custom-deep-blue flex flex-col items-center justify-center p-4 transition-colors duration-300 ease-in-out">
@@ -109,7 +181,10 @@ function App() {
         </header>
 
         {/* 2. Obszar wyświetlania wiadomości */}
-        <div className="flex-grow p-4 space-y-2 overflow-y-auto bg-gray-50 dark:bg-slate-700">
+        <div
+          ref={messagesContainerRef} // Użyj ref do przewijania
+          className="flex-grow p-4 space-y-2 overflow-y-auto bg-gray-50 dark:bg-slate-700"
+        >
           {messages.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400">
               Rozpocznij rozmowę!
@@ -129,6 +204,11 @@ function App() {
               </div>
             ))
           )}
+          {isAiTyping && (
+            <div className="p-3 rounded-lg max-w-[75%] bg-slate-200 dark:bg-slate-600 text-custom-dark-text dark:text-custom-light-text self-start mr-auto animate-pulse">
+              AI pisze...
+            </div>
+          )}
         </div>
 
         {/* 3. Formularz do wpisywania i wysyłania wiadomości */}
@@ -142,12 +222,13 @@ function App() {
               placeholder="Wpisz wiadomość..."
               value={currentMessage} // Połącz wartość inputa ze stanem currentMessage
               onChange={(e) => setCurrentMessage(e.target.value)} // Aktualizuj stan przy każdej zmianie
+              disabled={isAiTyping} // Wyłącz input, gdy AI pisze
               className="flex-grow p-2 border border-gray-300 dark:border-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-vibrant-purple dark:bg-slate-700 dark:text-custom-light-text"
             />
             <button
               type="submit"
               className="px-4 py-2 bg-custom-vibrant-purple text-white rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-custom-vibrant-purple disabled:opacity-50"
-              disabled={currentMessage.trim() === ""} // Wyłącz przycisk, jeśli input jest pusty
+              disabled={currentMessage.trim() === "" || isAiTyping} // Wyłącz przycisk, jeśli input jest pusty
             >
               Wyślij
             </button>
