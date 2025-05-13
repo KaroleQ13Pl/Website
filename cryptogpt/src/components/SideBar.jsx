@@ -60,7 +60,15 @@ function Sidebar({ activeView, setActiveView }) {
             </div>
           </div>
         </div>
-        <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-custom-dark-text dark:text-custom-light-text hover:bg-gray-200 dark:hover:bg-slate-700 rounded-md transition-colors duration-150">
+        <button
+          onClick={() => setActiveView("settings")} // Zmieniamy activeView na 'settings'
+          className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors duration-150
+                      ${
+                        activeView === "settings"
+                          ? "bg-custom-vibrant-purple text-white shadow-sm" // Styl dla aktywnego przycisku ustawień
+                          : "text-custom-dark-text dark:text-custom-light-text hover:bg-gray-200 dark:hover:bg-slate-700"
+                      }`}
+        >
           <span>Ustawienia</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"

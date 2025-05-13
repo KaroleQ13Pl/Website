@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import ThemeToggler from "./components/ThemeToggler";
 import ChatInterface from "./components/ChatInterface";
 import Sidebar from "./components/SideBar"; // Importujemy Sidebar
+import SettingsPage from "./components/SettingsPage"; // Importujemy SettingsPage
 
 function App() {
   const [activeView, setActiveView] = useState("chat");
@@ -35,6 +36,7 @@ function App() {
             // Na razie zostawmy jak jest, dopasujemy później.
             <ChatInterface />
           )}
+          {activeView === "settings" && <SettingsPage />}
         </main>
       </div>
 
