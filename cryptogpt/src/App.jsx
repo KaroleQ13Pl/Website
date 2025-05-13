@@ -1,128 +1,18 @@
-// src/App.jsx
-import React, { useState, useEffect, useRef } from "react"; // Upewnij się, że useEffect jest zaimportowany
-import MessageInput from "./components/MessageInput"; // Importuj komponent MessageInput
-import MessageList from "./components/MessageList"; // Importujemy MessageList
-import ThemeToggler from "./components/ThemeToggler"; // Importujemy ThemeToggler
+// Plik: src/App.jsx
+// >>> EDYTUJ TEN PLIK - ZNACZNE UPROSZCZENIE <<<
+
+import React from "react"; // useState, useEffect, useRef nie są już tu potrzebne dla logiki czatu
+import ThemeToggler from "./components/ThemeToggler"; // Importujemy komponent przełącznika motywu
+import ChatInterface from "./components/ChatInterface"; // Importujemy nowy główny komponent czatu
 
 function App() {
-  const [messages, setMessages] = useState([
-    // Przykładowe wiadomości początkowe (możesz je usunąć lub zostawić do testów)
-    { id: 1, text: "Witaj! Jak mogę pomóc?", sender: "ai" },
-    { id: 2, text: "Chciałbym zapytać o pogodę.", sender: "user" },
-  ]);
-  const [currentMessage, setCurrentMessage] = useState("");
-
-  const handleSendMessage = async (e) => {
-    // Dodajemy async
-    e.preventDefault();
-    if (currentMessage.trim() === "") return;
-
-    const userMessage = {
-      id: Date.now(),
-      text: currentMessage.trim(),
-      sender: "user",
-    };
-
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    const messageToSendToN8n = currentMessage.trim(); // Zapisz wiadomość przed wyczyszczeniem inputu
-    setCurrentMessage("");
-    setIsAiTyping(true); // Ustaw wskaźnik, że AI "pisze"
-
-    try {
-      const response = await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Tutaj możesz dodać nagłówki autoryzacyjne, jeśli Twój webhook n8n ich wymaga
-          // 'Authorization': 'Bearer TWOJ_TOKEN_N8N',
-        },
-        body: JSON.stringify({ message: messageToSendToN8n }), // Wysyłamy wiadomość w ciele JSON
-      });
-
-      if (!response.ok) {
-        // Jeśli odpowiedź serwera nie jest OK (np. błąd 4xx, 5xx)
-        throw new Error(`Błąd HTTP: ${response.status}`);
-      }
-
-      const data = await response.json(); // Oczekujemy odpowiedzi JSON z n8n
-
-      // Załóżmy, że n8n zwraca JSON w formacie: { "reply": "Odpowiedź od AI" }
-      if (data.reply) {
-        const aiResponse = {
-          id: Date.now() + 1, // Upewnij się, że ID jest unikalne
-          text: data.reply,
-          sender: "ai",
-        };
-        setMessages((prevMessages) => [...prevMessages, aiResponse]);
-      } else {
-        // Jeśli odpowiedź z n8n nie ma oczekiwanego pola "reply"
-        console.error(
-          "Otrzymano nieoczekiwany format odpowiedzi od n8n:",
-          data
-        );
-        const aiErrorResponse = {
-          id: Date.now() + 1,
-          text: "Przepraszam, wystąpił błąd w komunikacji z serwerem AI (nieprawidłowy format odpowiedzi).",
-          sender: "ai",
-        };
-        setMessages((prevMessages) => [...prevMessages, aiErrorResponse]);
-      }
-    } catch (error) {
-      console.error("Błąd podczas wysyłania wiadomości do n8n:", error);
-      // Wyświetl wiadomość o błędzie użytkownikowi
-      const aiErrorResponse = {
-        id: Date.now() + 1,
-        text: `Przepraszam, wystąpił błąd: ${error.message}. Spróbuj ponownie później.`,
-        sender: "ai",
-      };
-      setMessages((prevMessages) => [...prevMessages, aiErrorResponse]);
-    } finally {
-      setIsAiTyping(false); // Niezależnie od wyniku, AI "kończy pisać"
-    }
-  };
-
-  // Ref do scrollowania do ostatniej wiadomości
-  const messagesEndRef = useRef(null);
-  const messagesContainerRef = useRef(null); // Ref dla kontenera wiadomości
-
-  // Funkcja do przewijania do ostatniej wiadomości
-  useEffect(() => {
-    if (messagesContainerRef.current) {
-      const { scrollHeight, clientHeight } = messagesContainerRef.current;
-      messagesContainerRef.current.scrollTop = scrollHeight - clientHeight;
-    }
-  }, [messages]); // Uruchom ten efekt za każdym razem, gdy zmieni się tablica 'messages'
-
-  const N8N_WEBHOOK_URL =
-    "https://guided-yearly-swan.ngrok-free.app/webhook-test/0fc0a28a-c3d5-4491-ba8e-a7378172c202";
-
-  const [isAiTyping, setIsAiTyping] = useState(false);
-
   return (
     <div className="min-h-screen bg-custom-off-white dark:bg-custom-deep-blue flex flex-col items-center justify-center p-4 transition-colors duration-300 ease-in-out">
-      {/* Kontener czatu */}
-      <div className="flex flex-col w-full max-w-2xl h-[80vh] bg-white dark:bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300 ease-in-out">
-        {/* 1. Nagłówek czatu (opcjonalnie) */}
-        <header className="bg-custom-vibrant-purple text-white p-4 text-center">
-          <h1 className="text-xl font-semibold">Mój Czat AI</h1>
-        </header>
-
-        <div className="absolute top-4 right-4">
-          <ThemeToggler />
-        </div>
-
-        <MessageList
-          messages={messages}
-          messagesContainerRef={messagesContainerRef}
-          isAiTyping={isAiTyping}
-        />
-        <MessageInput
-          currentMessage={currentMessage}
-          setCurrentMessage={setCurrentMessage}
-          handleSendMessage={handleSendMessage}
-          isAiTyping={isAiTyping}
-        />
+      <div className="absolute top-4 right-4">
+        <ThemeToggler />
       </div>
+
+      <ChatInterface />
     </div>
   );
 }
