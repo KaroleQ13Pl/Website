@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from "react"; // Upewnij się, że useEffect jest zaimportowany
 
 function App() {
-  const [count, setCount] = useState(0); // Twój istniejący stan licznika
-
   // Stan do przechowywania aktualnego motywu ('light' lub 'dark')
   const [theme, setTheme] = useState(() => {
     // 1. Sprawdź, czy motyw jest zapisany w localStorage
@@ -41,17 +39,18 @@ function App() {
     localStorage.setItem("theme", theme);
   }, [theme]); // Ten efekt uruchomi się za każdym razem, gdy zmieni się stan 'theme'
 
+  // --- POCZĄTEK NOWEJ ZAWARTOŚCI DLA CZATU ---
+  // Na razie pusto, zaraz tu dodamy elementy czatu
+  // --- KONIEC NOWEJ ZAWARTOŚCI DLA CZATU ---
+
   return (
-    // Zastosuj style Tailwind reagujące na tryb ciemny
-    // Dodajemy `transition-colors` dla płynniejszej zmiany
-    <div className="min-h-screen bg-gray-100 dark:bg-slate-900 flex flex-col items-center justify-center p-4 transition-colors duration-300 ease-in-out">
-      {/* Przycisk do przełączania motywu */}
+    <div className="min-h-screen bg-custom-off-white dark:bg-custom-deep-blue flex flex-col items-center justify-center p-4 transition-colors duration-300 ease-in-out">
+      {/* Przycisk przełącznika motywu - zostawiamy */}
       <div className="absolute top-4 right-4">
         <button
           onClick={toggleTheme}
-          className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-gray-800 dark:text-gray-100 rounded-lg shadow hover:bg-slate-300 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all duration-150 ease-in-out"
+          className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-custom-dark-text dark:text-custom-light-text rounded-lg shadow hover:bg-slate-300 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 ring-custom-vibrant-purple transition-all duration-150 ease-in-out"
         >
-          {/* Prosta ikonka lub tekst */}
           {theme === "light" ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -86,28 +85,37 @@ function App() {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-xl max-w-md w-full transition-colors duration-300 ease-in-out">
-        <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-6 text-center">
-          Witaj w Interfejsie AI!
-        </h1>
+      {/* >>> NOWA STRUKTURA CZATU ZASTĘPUJE POPRZEDNI DIV <<< */}
+      <div className="flex flex-col w-full max-w-2xl h-[80vh] bg-white dark:bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300 ease-in-out">
+        {/* 1. Nagłówek czatu (opcjonalnie) */}
+        <header className="bg-custom-vibrant-purple text-white p-4 text-center">
+          <h1 className="text-xl font-semibold">Mój Czat AI</h1>
+        </header>
 
-        <p className="text-gray-700 dark:text-gray-300 mb-4 text-center">
-          To jest Twój pierwszy komponent React ostylowany za pomocą Tailwind
-          CSS.
-        </p>
-
-        <div className="text-center mb-6">
-          <button
-            onClick={() => setCount((count) => count + 1)}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-150 ease-in-out"
-          >
-            Licznik: {count}
-          </button>
+        {/* 2. Obszar wyświetlania wiadomości */}
+        <div className="flex-grow p-4 space-y-4 overflow-y-auto bg-gray-50 dark:bg-slate-700">
+          {/* Wiadomości będą tutaj renderowane */}
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            Brak wiadomości...
+          </p>
         </div>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-          Zacznij budować swój interfejs!
-        </p>
+        {/* 3. Formularz do wpisywania i wysyłania wiadomości */}
+        <form className="p-4 border-t border-gray-200 dark:border-slate-600 bg-gray-100 dark:bg-slate-800">
+          <div className="flex items-center space-x-2">
+            <input
+              type="text"
+              placeholder="Wpisz wiadomość..."
+              className="flex-grow p-2 border border-gray-300 dark:border-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-vibrant-purple dark:bg-slate-700 dark:text-custom-light-text"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 bg-custom-vibrant-purple text-white rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-custom-vibrant-purple"
+            >
+              Wyślij
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
