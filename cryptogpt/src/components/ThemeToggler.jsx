@@ -1,19 +1,24 @@
 import React from "react";
-import { useTheme } from "../contexts/ThemeContext"; // Importujemy nasz niestandardowy hook
+import { useTheme } from "../contexts/ThemeContext";
 
 function ThemeToggler() {
-  const { theme, toggleTheme } = useTheme(); // Używamy kontekstu do pobrania theme i toggleTheme
+  const { activeTheme, setTheme } = useTheme();
+
+  const toggleTheme = () => {
+    setTheme(activeTheme === "light" ? "dark" : "light");
+  };
 
   return (
     <button
       onClick={toggleTheme}
       className="p-2 bg-slate-200 dark:bg-slate-700 text-custom-dark-text dark:text-custom-light-text rounded-lg shadow hover:bg-slate-300 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 ring-custom-vibrant-purple transition-all duration-150 ease-in-out"
       aria-label={
-        theme === "light" ? "Przełącz na tryb ciemny" : "Przełącz na tryb jasny"
+        activeTheme === "light"
+          ? "Przełącz na tryb ciemny"
+          : "Przełącz na tryb jasny"
       }
     >
-      {theme === "light" ? (
-        // Ikonka księżyca (dla trybu jasnego, sugeruje przełączenie na ciemny)
+      {activeTheme === "light" ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -29,7 +34,6 @@ function ThemeToggler() {
           />
         </svg>
       ) : (
-        // Ikonka słońca (dla trybu ciemnego, sugeruje przełączenie na jasny)
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

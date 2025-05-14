@@ -1,62 +1,62 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 
-// 1. Tworzenie kontekstu
-// Dostarczamy wartości domyślne, które mogą być przydatne przy testowaniu
-// lub jeśli komponent użyje kontekstu bez Providera (choć tego unikamy).
 const ThemeContext = createContext({
-  theme: "light",
-  toggleTheme: () => {}, // Pusta funkcja jako placeholder
+  activeTheme: "light", // Domyślny motyw
+  themes: {
+    light: {},
+    dark: {},
+  },
+  setTheme: () => {},
 });
 
-// 2. Tworzenie Providera Kontekstu
-// To jest komponent, który będzie "otaczał" część aplikacji,
-// która potrzebuje dostępu do danych z kontekstu.
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
-    // Logika inicjalizacji motywu (taka sama jak poprzednio w App.jsx)
-    const localTheme = localStorage.getItem("theme");
-    if (localTheme) {
-      return localTheme;
-    }
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-      return "dark";
-    }
-    return "light";
+  const [activeTheme, setActiveTheme] = useState(() => {
+    const localTheme = localStorage.getItem("activeTheme");
+    return localTheme || "light"; // Domyślnie "light"
   });
 
-  // Efekt do aktualizacji klasy na <html> i zapisywania w localStorage
-  // (taki sam jak poprzednio w App.jsx)
+  const themes = {
+    light: {
+      "tlo-strony": "bg-jasny-biel",
+      "tekst-podstawowy": "text-custom-dark-text",
+      "tekst-naglowek": "text-jasny-zielony",
+      "akcent-1": "text-jasny-zloto",
+      "tlo-elementu": "bg-jasny-perla",
+      przycisk: "bg-jasny-zielony text-white",
+    },
+    dark: {
+      "tlo-strony": "bg-ciemny-antracyt",
+      "tekst-podstawowy": "text-custom-light-text",
+      "tekst-naglowek": "text-ciemny-zielony",
+      "akcent-1": "text-ciemny-zloto",
+      "tlo-elementu": "bg-ciemny-szary",
+      przycisk: "bg-ciemny-zielony text-white",
+    },
+    // Możesz dodać więcej motywów tutaj
+  };
+
   useEffect(() => {
+    localStorage.setItem("activeTheme", activeTheme);
+    // Aktualizacja klasy 'dark' na elemencie <html>
     const root = window.document.documentElement;
-    if (theme === "dark") {
+    if (activeTheme === "dark") {
       root.classList.add("dark");
     } else {
       root.classList.remove("dark");
     }
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+  }, [activeTheme]);
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  const setTheme = (themeName) => {
+    setActiveTheme(themeName);
   };
 
-  // Wartość, którą Provider będzie udostępniał swoim dzieciom
-  const value = {
-    theme,
-    toggleTheme,
-  };
+  const value = { activeTheme, themes, setTheme };
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
 
-// 3. Tworzenie niestandardowego hooka do używania kontekstu
-// To ułatwi konsumowanie kontekstu w komponentach.
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (context === undefined) {

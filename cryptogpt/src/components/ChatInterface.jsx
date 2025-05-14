@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
+import { useTheme } from "../contexts/ThemeContext"; // Importujemy useTheme
 
 // URL do webhooka n8n - przenieśliśmy go tutaj, bo logika jest tutaj
 const N8N_WEBHOOK_URL =
   "https://guided-yearly-swan.ngrok-free.app/webhook-test/0fc0a28a-c3d5-4491-ba8e-a7378172c202";
 
 function ChatInterface() {
+  const { activeTheme, themes } = useTheme(); // Pobieramy activeTheme i themes
+  const currentTheme = themes[activeTheme]; // Pobieramy aktualny motyw
   // Cała logika stanu czatu jest teraz tutaj
   const [messages, setMessages] = useState([
     {
@@ -92,8 +95,12 @@ function ChatInterface() {
 
   return (
     <div className="flex flex-col w-full max-w-2xl h-[80vh] bg-white dark:bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300 ease-in-out">
-      <header className="bg-custom-vibrant-purple text-white p-4 text-center">
-        <h1 className="text-xl font-semibold">Mój Czat AI</h1>
+      <header className={`${currentTheme["przycisk"]} p-4 text-center`}>
+        <h1
+          className={`text-xl font-semibold ${currentTheme["tekst-naglowek"]}`}
+        >
+          Mój Czat AI
+        </h1>
       </header>
 
       <MessageList

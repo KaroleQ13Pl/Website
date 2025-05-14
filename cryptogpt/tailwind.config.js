@@ -8,11 +8,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        "custom-off-white": "#F8F8F8", // Nazwa dla naszego jasnego tła
-        "custom-deep-blue": "#1A202C", // Nazwa dla naszego ciemnego tła
-        "custom-dark-text": "#2D3748", // Nazwa dla naszego ciemnego tekstu
-        "custom-light-text": "#E2E8F0", // Nazwa dla naszego jasnego tekstu
-        "custom-vibrant-purple": "#6B46C1", // Nazwa dla naszego koloru akcentu
+        "jasny-biel": "#FFFFFF", // Czysta biel
+        "jasny-perla": "#F8F8FF", // Perłowa biel (snow)
+        "jasny-zielony": "#006400", // Ciemna zieleń (darkgreen)
+        "jasny-zloto": "#FFD700", // Złote akcenty (gold)
+        "ciemny-antracyt": "#36454F", // Antracyt (charcoal)
+        "ciemny-szary": "#A9A9A9", // Ciemna szarość (darkgray)
+        "ciemny-zielony": "#006400", // Ciemna zieleń (darkgreen) - powtórzenie, można rozważyć inny odcień
+        "ciemny-zloto": "#FFD700", // Złote akcenty (gold)
       },
     },
   },
