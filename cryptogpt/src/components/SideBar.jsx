@@ -1,11 +1,14 @@
 import React from "react";
 import { useUser } from "../contexts/UserContext";
+import { useTheme } from "../contexts/ThemeContext";
 // Możesz tu dodać importy ikon, jeśli będziesz ich używać
 
 // Komponent Sidebar przyjmuje activeView i setActiveView jako propsy
 // aby mógł podświetlać aktywny link i zmieniać widok w App.jsx
 function Sidebar({ activeView, setActiveView }) {
   const { user } = useUser(); // Pobieramy dane aktualnego użytkownika
+  const { activeTheme, themes } = useTheme();
+  const currentTheme = themes[activeTheme];
   // Możesz dodać tu tablicę z elementami nawigacji, aby łatwiej nimi zarządzać
   const navItems = [
     { id: "home", label: "Home" /* , icon: <HomeIcon /> */ },
@@ -14,15 +17,13 @@ function Sidebar({ activeView, setActiveView }) {
   ];
 
   return (
-    <aside className="w-60 md:w-64 bg-gray-100 dark:bg-slate-800 p-4 flex flex-col shadow-lg h-full">
-      {" "}
-      {/* Użyłem h-full, aby sidebar zajmował całą dostępną wysokość kontenera flex */}
+    <aside
+      className={`w-60 md:w-64 ${currentTheme.background} p-4 flex flex-col shadow-lg h-full`}
+    >
       <div className="mb-8 px-2">
         {" "}
         {/* Dodatkowy padding dla tytułu */}
-        <h1 className="text-2xl font-bold text-custom-vibrant-purple dark:text-purple-400">
-          AI Panel
-        </h1>
+        <h1 className={currentTheme["akcent-1"]}>AI Panel</h1>
       </div>
       <nav className="flex-grow">
         <ul>
@@ -33,11 +34,12 @@ function Sidebar({ activeView, setActiveView }) {
                 className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150
                             ${
                               activeView === item.id
-                                ? "bg-custom-vibrant-purple text-white shadow-sm"
-                                : "text-custom-dark-text dark:text-custom-light-text hover:bg-gray-200 dark:hover:bg-slate-700"
+                                ? currentTheme.primary + " text-white shadow-sm"
+                                : currentTheme.text +
+                                  " hover:" +
+                                  currentTheme.surface
                             }`}
               >
-                {/* Tutaj można dodać ikonę item.icon */}
                 {item.label}
               </button>
             </li>
@@ -45,14 +47,14 @@ function Sidebar({ activeView, setActiveView }) {
         </ul>
       </nav>
       <div className="mt-auto">
-        <button // Możesz użyć diva ze stylem `cursor-pointer` jeśli wolisz nie-przyciskowy wygląd
-          onClick={() => setActiveView("userProfile")} // Ustawiamy nowy widok 'userProfile'
-          className={`w-full p-2 mb-2 border-t border-gray-300 dark:border-slate-700 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-md transition-colors duration-150 focus:outline-none 
+        <button
+          onClick={() => setActiveView("userProfile")}
+          className={`w-full p-2 mb-2 border-t border-gray-300 dark:border-slate-700 hover:${
+            currentTheme.surface
+          } rounded-md transition-colors duration-150 focus:outline-none 
                       ${
-                        activeView === "userProfile"
-                          ? "bg-gray-200 dark:bg-slate-700"
-                          : ""
-                      }`} // Opcjonalne podświetlenie
+                        activeView === "userProfile" ? currentTheme.surface : ""
+                      }`}
           aria-label="Przejdź do profilu użytkownika"
         >
           <div className="flex items-center">
@@ -75,12 +77,12 @@ function Sidebar({ activeView, setActiveView }) {
           </div>
         </button>
         <button
-          onClick={() => setActiveView("settings")} // Zmieniamy activeView na 'settings'
+          onClick={() => setActiveView("settings")}
           className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors duration-150
                       ${
                         activeView === "settings"
-                          ? "bg-custom-vibrant-purple text-white shadow-sm" // Styl dla aktywnego przycisku ustawień
-                          : "text-custom-dark-text dark:text-custom-light-text hover:bg-gray-200 dark:hover:bg-slate-700"
+                          ? currentTheme.primary + " text-white shadow-sm"
+                          : currentTheme.text + " hover:" + currentTheme.surface
                       }`}
         >
           <span>Ustawienia</span>

@@ -94,11 +94,11 @@ function ChatInterface() {
   }, [messages]);
 
   return (
-    <div className="flex flex-col w-full max-w-2xl h-[80vh] bg-white dark:bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300 ease-in-out">
-      <header className={`${currentTheme["przycisk"]} p-4 text-center`}>
-        <h1
-          className={`text-xl font-semibold ${currentTheme["tekst-naglowek"]}`}
-        >
+    <div
+      className={`flex flex-col w-full max-w-2xl h-[80vh] rounded-lg shadow-xl overflow-hidden transition-colors duration-300 ease-in-out ${currentTheme.background}`}
+    >
+      <header className={`${currentTheme.primary} text-white p-4 text-center`}>
+        <h1 className={`text-xl font-semibold ${currentTheme.heading}`}>
           Mój Czat AI
         </h1>
       </header>

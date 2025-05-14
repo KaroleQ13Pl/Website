@@ -1,33 +1,34 @@
 import React from "react";
+import { useTheme } from "../contexts/ThemeContext";
 
 function SettingsPage() {
+  const { activeTheme, themes } = useTheme();
+  const currentTheme = themes[activeTheme];
+
   return (
     <div className="p-6">
-      {" "}
-      {/* Dodajemy padding, jeśli nie jest już w <main> */}
-      <h2 className="text-3xl font-semibold mb-6 text-custom-dark-text dark:text-custom-light-text">
+      <h2 className={`text-3xl font-semibold mb-6 ${currentTheme.heading}`}>
         Ustawienia
       </h2>
-      <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow">
-        <p className="text-custom-dark-text dark:text-custom-light-text mb-4">
+      <div className={`${currentTheme.surface} p-6 rounded-lg shadow`}>
+        <p className={currentTheme.text}>
           Witaj na stronie ustawień! Tutaj w przyszłości będziesz mógł
           skonfigurować różne aspekty aplikacji.
         </p>
-        {/* Przykładowe miejsce na przyszłe opcje */}
         <div>
-          <h3 className="text-xl font-medium mb-2 text-custom-dark-text dark:text-custom-light-text">
+          <h3 className={`text-xl font-medium mb-2 ${currentTheme.heading}`}>
             Opcje Motywu
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className={currentTheme.muted}>
             Przełącznik motywu znajduje się globalnie w aplikacji (na razie w
             prawym górnym rogu).
           </p>
         </div>
         <div className="mt-6">
-          <h3 className="text-xl font-medium mb-2 text-custom-dark-text dark:text-custom-light-text">
+          <h3 className={`text-xl font-medium mb-2 ${currentTheme.heading}`}>
             Ustawienia Konta
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className={currentTheme.muted}>
             Informacje o użytkowniku i opcje konta pojawią się tutaj.
           </p>
         </div>

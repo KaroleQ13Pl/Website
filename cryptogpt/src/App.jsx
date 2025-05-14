@@ -1,4 +1,3 @@
-// Plik: src/App.jsx
 import React, { useState } from "react";
 import ThemeToggler from "./components/ThemeToggler";
 import ChatInterface from "./components/ChatInterface";
@@ -14,20 +13,20 @@ function App() {
 
   return (
     <div
-      className={`min-h-screen ${currentTheme["tlo-strony"]} transition-colors duration-300 ease-in-out`}
+      className={`min-h-screen ${currentTheme.background} transition-colors duration-300 ease-in-out`}
     >
       <div className="flex h-screen">
         <Sidebar activeView={activeView} setActiveView={setActiveView} />
 
-        <main className="flex-grow p-6 overflow-y-auto bg-white dark:bg-slate-900">
+        <main className="flex-grow p-6 overflow-y-auto ${currentTheme.surface} ">
           {activeView === "home" && (
             <div>
               <h2
-                className={`text-3xl font-semibold mb-4 ${currentTheme["tekst-naglowek"]}`}
+                className={`text-3xl font-semibold mb-4 ${currentTheme.heading}`}
               >
                 Strona Główna
               </h2>
-              <p className={currentTheme["tekst-podstawowy"]}>
+              <p className={currentTheme.text}>
                 Witaj na stronie głównej! Wybierz opcję z menu.
               </p>
             </div>
