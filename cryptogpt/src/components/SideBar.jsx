@@ -23,7 +23,7 @@ function Sidebar({ activeView, setActiveView }) {
       <div className="mb-8 px-2">
         {" "}
         {/* Dodatkowy padding dla tytułu */}
-        <h1 className={currentTheme["akcent-1"]}>AI Panel</h1>
+        <h1 className={currentTheme.text}>AI Panel</h1>
       </div>
       <nav className="flex-grow">
         <ul>
