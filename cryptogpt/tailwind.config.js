@@ -1,21 +1,32 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: "class", // Umożliwia tryb ciemny
-  content: [
-    "./index.html", // Skanuje główny plik HTML
-    "./src/**/*.{js,ts,jsx,tsx}", // Skanuje wszystkie pliki .js, .ts, .jsx, .tsx w folderze src i jego podfolderach
-  ],
+  darkMode: "class",
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        "jasny-biel": "#FFFFFF", // Czysta biel
-        "jasny-perla": "#F8F8FF", // Perłowa biel (snow)
-        "jasny-zielony": "#006400", // Ciemna zieleń (darkgreen)
-        "jasny-zloto": "#FFD700", // Złote akcenty (gold)
-        "ciemny-antracyt": "#36454F", // Antracyt (charcoal)
-        "ciemny-szary": "#A9A9A9", // Ciemna szarość (darkgray)
-        "ciemny-zielony": "#006400", // Ciemna zieleń (darkgreen) - powtórzenie, można rozważyć inny odcień
-        "ciemny-zloto": "#FFD700", // Złote akcenty (gold)
+        light: {
+          background: "#f9fafb",
+          surface: "#f3f4f6",
+          text: "#111827",
+          heading: "#0f172a",
+          primary: "#4ade80",
+          secondary: "#facc15",
+          accent: "#06b6d4",
+          border: "#e5e7eb",
+          muted: "#9ca3af",
+        },
+        dark: {
+          background: "#1f2937",
+          surface: "#374151",
+          text: "#f9fafb",
+          heading: "#a7f3d0",
+          primary: "#22c55e",
+          secondary: "#eab308",
+          accent: "#0ea5e9",
+          border: "#4b5563",
+          muted: "#6b7280",
+        },
       },
     },
   },

@@ -7,35 +7,47 @@ const ThemeContext = createContext({
     dark: {},
   },
   setTheme: () => {},
+  getColor: () => "",
 });
 
 export function ThemeProvider({ children }) {
+  // Komponent ThemeProvider
   const [activeTheme, setActiveTheme] = useState(() => {
     const localTheme = localStorage.getItem("activeTheme");
     return localTheme || "light"; // Domyślnie "light"
   });
 
   const themes = {
+    // Definicja motywów
     light: {
-      "tlo-strony": "bg-jasny-biel",
-      "tekst-podstawowy": "text-custom-dark-text",
-      "tekst-naglowek": "text-jasny-zielony",
-      "akcent-1": "text-jasny-zloto",
-      "tlo-elementu": "bg-jasny-perla",
-      przycisk: "bg-jasny-zielony text-white",
+      // Motyw jasny
+      background: "light-background",
+      surface: "light-surface",
+      text: "light-text",
+      heading: "light-heading",
+      primary: "light-primary",
+      secondary: "light-secondary",
+      accent: "light-accent",
+      border: "light-border",
+      muted: "light-muted",
     },
     dark: {
-      "tlo-strony": "bg-ciemny-antracyt",
-      "tekst-podstawowy": "text-custom-light-text",
-      "tekst-naglowek": "text-ciemny-zielony",
-      "akcent-1": "text-ciemny-zloto",
-      "tlo-elementu": "bg-ciemny-szary",
-      przycisk: "bg-ciemny-zielony text-white",
+      // Motyw ciemny
+      background: "dark-background",
+      surface: "dark-surface",
+      text: "dark-text",
+      heading: "dark-heading",
+      primary: "dark-primary",
+      secondary: "dark-secondary",
+      accent: "dark-accent",
+      border: "dark-border",
+      muted: "dark-muted",
     },
     // Możesz dodać więcej motywów tutaj
   };
 
   useEffect(() => {
+    // Ustawienie domyślnego motywu na podstawie localStorage
     localStorage.setItem("activeTheme", activeTheme);
     // Aktualizacja klasy 'dark' na elemencie <html>
     const root = window.document.documentElement;
@@ -47,17 +59,25 @@ export function ThemeProvider({ children }) {
   }, [activeTheme]);
 
   const setTheme = (themeName) => {
+    // Funkcja do ustawiania motywu
     setActiveTheme(themeName);
   };
 
   const value = { activeTheme, themes, setTheme };
 
+  // Funkcja getColor - teraz niepotrzebna, ale zostawiam na przyszłość
+  /*const getColor = (colorName) => {
+    return themes[activeTheme][colorName] || "";
+  };*/
+
   return (
+    // Użycie ThemeContext.Provider do udostępnienia kontekstu
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
 
 export function useTheme() {
+  // Hook do używania kontekstu motywu
   const context = useContext(ThemeContext);
   if (context === undefined) {
     throw new Error("useTheme must be used within a ThemeProvider");

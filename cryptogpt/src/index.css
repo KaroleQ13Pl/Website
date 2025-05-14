@@ -1,3 +1,78 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Aliasy klas tematycznych */
+.light-background {
+  @apply bg-light-background;
+}
+
+.light-surface {
+  @apply bg-light-surface;
+}
+
+.light-text {
+  @apply text-light-text;
+}
+
+.light-heading {
+  @apply text-light-heading;
+}
+
+.light-primary {
+  @apply bg-light-primary text-white; /* Przykład z tekstem białym */
+}
+
+.light-secondary {
+  @apply bg-light-secondary;
+}
+
+.light-accent {
+  @apply bg-light-accent;
+}
+
+.light-border {
+  @apply border-light-border;
+}
+
+.light-muted {
+  @apply text-light-muted;
+}
+
+.dark-background {
+  @apply bg-dark-background;
+}
+
+.dark-surface {
+  @apply bg-dark-surface;
+}
+
+.dark-text {
+  @apply text-dark-text;
+}
+
+.dark-heading {
+  @apply text-dark-heading;
+}
+
+.dark-primary {
+  @apply bg-dark-primary text-white;
+}
+
+.dark-secondary {
+  @apply bg-dark-secondary;
+}
+
+.dark-accent {
+  @apply bg-dark-accent;
+}
+
+.dark-border {
+  @apply border-dark-border;
+}
+
+.dark-muted {
+  @apply text-dark-muted;
+}
+
+/* ... inne style ... */
