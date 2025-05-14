@@ -4,15 +4,6 @@
 
 ---
 
-## 🎯 Zasady ogólne
-
-- Każdy kolor ma wersję `light` i `dark`
-- Nazwy są semantyczne – opisują **funkcję**, a nie wygląd
-- Używaj `dark:` razem z `light-` dla pełnej obsługi motywu
-- Komponenty powinny korzystać z ustalonych tokenów
-
----
-
 ## 🧱 Struktura tokenów kolorów
 
 | Nazwa tokena | Przeznaczenie                | Przykład użycia                                   |
