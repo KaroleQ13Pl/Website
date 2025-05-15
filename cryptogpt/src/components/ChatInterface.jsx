@@ -95,7 +95,7 @@ function ChatInterface() {
 
   return (
     <div
-      className={`flex flex-col w-full max-w-2xl h-[80vh] rounded-lg shadow-xl overflow-hidden transition-colors duration-300 ease-in-out ${currentTheme.background}`}
+      className={`flex flex-col w-full max-w-2xl rounded-lg shadow-xl overflow-hidden transition-colors duration-300 ease-in-out ${currentTheme.background}`}
     >
       <header className={`${currentTheme.primary} text-white p-4 text-center`}>
         <h1 className={`text-xl font-semibold ${currentTheme.heading}`}>

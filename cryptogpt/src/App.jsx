@@ -17,10 +17,12 @@ function App() {
       className={`min-h-screen flex flex-col ${currentTheme.background} transition-colors duration-300 ease-in-out`}
     >
       <Topbar />
-      <div className="flex h-screen ">
+      <div className={`flex flex-1 pt-14`}>
         <Sidebar activeView={activeView} setActiveView={setActiveView} />
 
-        <main className="flex-grow p-14 overflow-y-auto ${currentTheme.surface} ">
+        <main
+          className={`flex-grow p-6 md:p-8 overflow-y-auto ${currentTheme.surface}`}
+        >
           {activeView === "home" && (
             <div>
               <h2
