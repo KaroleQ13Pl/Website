@@ -1,30 +1,47 @@
+// src/App.jsx
 import React, { useState } from "react";
-import ThemeToggler from "./components/ThemeToggler";
+import Topbar from "./components/Topbar";
+import Sidebar from "./components/SideBar";
 import ChatInterface from "./components/ChatInterface";
-import Sidebar from "./components/SideBar"; // Importujemy Sidebar
-import SettingsPage from "./components/SettingsPage"; // Importujemy SettingsPage
-import UserProfilePage from "./components/UserProfilePage"; // Importujemy UserProfilePage
-import { useTheme } from "./contexts/ThemeContext"; // Importujemy useTheme
-import Topbar from "./components/Topbar"; // Importujemy Topbar
+import SettingsPage from "./components/SettingsPage";
+import UserProfilePage from "./components/UserProfilePage";
+import { useTheme } from "./contexts/ThemeContext";
 
 function App() {
   const [activeView, setActiveView] = useState("chat");
-  const { activeTheme, themes } = useTheme(); // Pobieramy activeTheme i themes
-  const currentTheme = themes[activeTheme]; // Pobieramy aktualny motyw
+  const { activeTheme, themes } = useTheme();
+  const currentTheme = themes[activeTheme];
+  const topbarHeightClass = "pt-14"; // Wysokość Topbara (h-14 -> 3.5rem -> 56px)
 
   return (
     <div
+      // Główny kontener aplikacji, zajmuje cały ekran i jest flexem kolumnowym
       className={`min-h-screen flex flex-col ${currentTheme.background} transition-colors duration-300 ease-in-out`}
     >
+      {/* Topbar jest stały i zajmuje swoją wysokość */}
       <Topbar />
-      <div className={`flex flex-1 pt-14`}>
+
+      {/* Kontener dla Sidebara i głównej treści (main) */}
+      {/* flex-1 sprawia, że ten div zajmuje resztę wysokości po Topbarze */}
+      {/* topbarHeightClass zapewnia, że zawartość zaczyna się pod Topbarem */}
+      <div className={`flex flex-1 ${topbarHeightClass} overflow-hidden`}>
+        {/* Dodano overflow-hidden tutaj, aby uniknąć podwójnych scrollbarów, jeśli Sidebar lub main miałyby tendencję do przepełniania */}
         <Sidebar activeView={activeView} setActiveView={setActiveView} />
 
+        {/* Główna treść */}
+        {/* flex-grow: rośnie, aby zająć dostępną szerokość */}
+        {/* p-X: wewnętrzne odstępy */}
+        {/* flex flex-col: dzieci (np. ChatInterface) będą układane w kolumnie */}
+        {/* items-center: centruje ChatInterface w poziomie (jeśli ma max-width) */}
+        {/* overflow-y-auto: Jeśli główna treść (np. SettingsPage) jest dłuższa niż okno, to TEN kontener będzie miał scroll.
+            ChatInterface będzie zarządzał swoim scrollem wewnętrznie. */}
         <main
-          className={`flex-grow p-6 md:p-8 overflow-y-auto ${currentTheme.surface}`}
+          className={`flex-grow p-4 sm:p-6 md:p-8 ${currentTheme.surface} 
+                      flex flex-col items-center overflow-y-auto`}
         >
           {activeView === "home" && (
-            <div>
+            /* Prosty kontener dla strony głównej */
+            <div className="text-center">
               <h2
                 className={`text-3xl font-semibold mb-4 ${currentTheme.heading}`}
               >
@@ -35,6 +52,7 @@ function App() {
               </p>
             </div>
           )}
+          {/* ChatInterface powinien dynamicznie zająć całą dostępną wysokość w tym kontenerze main */}
           {activeView === "chat" && <ChatInterface />}
           {activeView === "settings" && <SettingsPage />}
           {activeView === "userProfile" && <UserProfilePage />}
