@@ -75,4 +75,51 @@
   @apply text-dark-muted;
 }
 
-/* ... inne style ... */
+/* Dodaj te style na początku, jeśli jeszcze ich nie masz */
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth; /* Płynne przewijanie */
+  }
+  body {
+    @apply font-sans; /* Używa Inter zdefiniowanego w tailwind.config.js */
+    /* Możesz tutaj dodać domyślny kolor tekstu i tła dla body,
+       ale ThemeContext i klasy w App.jsx już to obsługują */
+  }
+  /* Styl dla paska przewijania (opcjonalnie, dla nowoczesnego wyglądu) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-light-surface dark:bg-dark-surface rounded-md;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-light-border dark:bg-dark-border rounded-md;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-light-muted dark:bg-dark-muted;
+  }
+}
+
+/* Twoje aliasy klas tematycznych - są OK */
+.light-background {
+  @apply bg-light-background;
+}
+/* ... reszta Twoich aliasów ... */
+.dark-muted {
+  @apply text-dark-muted;
+}
+
+/* Dodatkowe style dla textarea, aby automatycznie się rozszerzała (prosty przykład) */
+@layer components {
+  textarea[rows="1"] {
+    /* Można by to bardziej zaawansowanie zrobić z JavaScriptem
+       do precyzyjnego dopasowywania wysokości do treści,
+       ale to prosty CSS, który trochę pomoże */
+    min-height: calc(
+      1.5em + 1.5rem
+    ); /* padding-py (0.75rem * 2) + line-height */
+  }
+}

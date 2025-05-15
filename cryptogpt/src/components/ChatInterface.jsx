@@ -3,8 +3,11 @@ import React, { useState, useEffect, useRef } from "react";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 import { useTheme } from "../contexts/ThemeContext";
+// Załóżmy, że masz ścieżki do awatarów w folderze public
+// lub używasz pełnych URL-i
+// const USER_AVATAR_URL = "https://via.placeholder.com/40/7F9CF5/FFFFFF?Text=U"; // Placeholder
+// const AI_AVATAR_URL = "/ai-avatar.png"; // Upewnij się, że ten plik istnieje w public/
 
-// ... (URL webhooka i logika handleSendMessage, useState, useEffect bez zmian)
 const N8N_WEBHOOK_URL =
   "https://guided-yearly-swan.ngrok-free.app/webhook-test/0fc0a28a-c3d5-4491-ba8e-a7378172c202";
 
@@ -14,8 +17,9 @@ function ChatInterface() {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Witaj! Jestem Twoim asystentem AI. W czym mogę pomóc?",
+      text: "Witaj! Jestem Twoim asystentem AI. Jak mogę Ci dzisiaj pomóc?",
       sender: "ai",
+      avatar: "/ai-avatar.png", // Przykładowy avatar AI, upewnij się, że istnieje w /public
     },
   ]);
   const [currentMessage, setCurrentMessage] = useState("");
@@ -24,12 +28,13 @@ function ChatInterface() {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (currentMessage.trim() === "") return;
+    if (currentMessage.trim() === "" || isAiTyping) return;
 
     const userMessage = {
       id: Date.now(),
       text: currentMessage.trim(),
       sender: "user",
+      avatar: "https://via.placeholder.com/40/3B82F6/FFFFFF?Text=Ty", // Możesz pobrać z UserContext
     };
 
     setMessages((prevMessages) => [...prevMessages, userMessage]);
@@ -49,34 +54,21 @@ function ChatInterface() {
           `Błąd HTTP: ${response.status} - ${response.statusText}`
         );
       }
-
       const data = await response.json();
-
-      if (data.reply) {
-        const aiResponse = {
-          id: Date.now() + 1,
-          text: data.reply,
-          sender: "ai",
-        };
-        setMessages((prevMessages) => [...prevMessages, aiResponse]);
-      } else {
-        console.error(
-          "Otrzymano nieoczekiwany format odpowiedzi od n8n:",
-          data
-        );
-        const aiErrorResponse = {
-          id: Date.now() + 1,
-          text: "Przepraszam, wystąpił błąd w komunikacji z serwerem AI (nieprawidłowy format odpowiedzi).",
-          sender: "ai",
-        };
-        setMessages((prevMessages) => [...prevMessages, aiErrorResponse]);
-      }
+      const aiResponse = {
+        id: Date.now() + 1,
+        text: data.reply || "Nie udało się uzyskać odpowiedzi.",
+        sender: "ai",
+        avatar: "/ai-avatar.png",
+      };
+      setMessages((prevMessages) => [...prevMessages, aiResponse]);
     } catch (error) {
       console.error("Błąd podczas wysyłania wiadomości do n8n:", error);
       const aiErrorResponse = {
         id: Date.now() + 1,
-        text: `Przepraszam, wystąpił błąd podczas komunikacji: ${error.message}. Spróbuj ponownie później.`,
+        text: `Przepraszam, wystąpił błąd: ${error.message}.`,
         sender: "ai",
+        avatar: "/ai-avatar.png",
       };
       setMessages((prevMessages) => [...prevMessages, aiErrorResponse]);
     } finally {
@@ -86,47 +78,34 @@ function ChatInterface() {
 
   useEffect(() => {
     if (messagesContainerRef.current) {
-      const { scrollHeight } = messagesContainerRef.current;
-      messagesContainerRef.current.scrollTop = scrollHeight;
+      const { scrollHeight, clientHeight } = messagesContainerRef.current;
+      messagesContainerRef.current.scrollTop = scrollHeight - clientHeight;
     }
   }, [messages, isAiTyping]);
 
   return (
-    // GŁÓWNY KONTENER KOMPONENTU CZATU (ZIELONY PROSTOKĄT)
-    // flex flex-col: Układa elementy (header, MessageList, MessageInput) w kolumnie.
-    // w-full max-w-2xl: Zajmuje pełną dostępną szerokość, ale nie więcej niż 2xl. Pozwala na centrowanie w 'main' dzięki 'items-center'.
-    // h-full: KLUCZOWE! Zajmuje 100% wysokości swojego rodzica ('main'). 'main' musi mieć zdefiniowaną wysokość lub być kontenerem flex, aby to zadziałało.
-    // overflow-hidden: KLUCZOWE! Zapobiega "wylewaniu" się zawartości MessageList poza ten kontener.
-    //                To zmusza MessageList do użycia własnego paska przewijania.
     <div
-      className={`flex flex-col w-full max-w-2xl rounded-lg shadow-xl 
+      className={`flex flex-col w-full rounded-lg shadow-soft 
                   ${currentTheme.background} h-full overflow-hidden
                   transition-colors duration-300 ease-in-out`}
     >
-      {/* Nagłówek czatu */}
-      {/* flex-shrink-0: Zapobiega kurczeniu się nagłówka, gdyby MessageList potrzebował więcej miejsca. */}
-      <header
-        className={`${currentTheme.primary} p-4 text-center flex-shrink-0`}
-      >
-        <h1 className={`text-xl font-semibold text-white`}>Mój Czat AI</h1>
-      </header>
+      {/* Opcjonalny, mały nagłówek wewnątrz ChatInterface */}
+      {/* <header className={`p-3 text-sm ${currentTheme.surface} ${currentTheme.border} border-b flex-shrink-0 text-center ${currentTheme.text}`}>
+        CryptoGPT
+      </header> */}
 
-      {/* Kontener na listę wiadomości (GŁÓWNY OBSZAR PRZEWIJANIA) */}
-      {/* Tutaj nie dodajemy klas bezpośrednio, bo MessageList sam je definiuje */}
       <MessageList
         messages={messages}
         messagesContainerRef={messagesContainerRef}
         isAiTyping={isAiTyping}
       />
 
-      {/* Kontener na pole wprowadzania wiadomości (CZERWONY PROSTOKĄT) */}
-      {/* flex-shrink-0: Zapobiega kurczeniu się pola wprowadzania. */}
       <MessageInput
         currentMessage={currentMessage}
         setCurrentMessage={setCurrentMessage}
         handleSendMessage={handleSendMessage}
         isAiTyping={isAiTyping}
-        className="flex-shrink-0" // Przekazanie klasy do komponentu MessageInput
+        className="flex-shrink-0" // Ta klasa jest ważna
       />
     </div>
   );
